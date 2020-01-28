@@ -19,7 +19,7 @@
         const [icon, setIcon] = React.useState('');
 
         const fetchData = async () => {
-            const targetUrl = 'https://api.openweathermap.org/data/2.5/weather?q=Helsinki&appid=bce4630ec139208257bce1db25baccbd&units=metric';
+            const targetUrl = 'https://api.openweathermap.org/data/2.5/weather?q=Helsinki&appid=(your api key here)&units=metric';
             const resp = await fetch(targetUrl);
             const data = await resp.json();
             setTemperature(data.main.temp.toFixed(1));
