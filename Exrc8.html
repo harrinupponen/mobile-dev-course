@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>React getting started</title>
+  </head>
+  <body>
+    <!-- Root container for react components -->
+    <div id="root"></div>
+
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+
+    <script type="text/babel">
+      const Users = () => {
+        const [listItems, setListItems] = React.useState([]);
+
+        const fetchData = async () => {
+            const targetUrl = 'https://reqres.in/api/users';
+            const resp = await fetch(targetUrl);
+            const data = await resp.json();
+            setListItems(data.data);
+        }
+            
+        React.useEffect(() => {
+          fetchData();
+          } ,[] 
+        )
+
+        const itemRows = listItems.map((user) =>
+          <tr key = {user.id}>
+            <td>{user.first_name}</td>
+            <td>{user.last_name}</td>
+            <td>{user.email}</td>
+            <td><img src={user.avatar} /></td>
+          </tr>
+        );
+
+        return(
+            <div>
+              <h2>Users</h2>
+              <table>
+                <tbody>
+                  <tr><th>Firstname</th><th>Lastname</th><th>Email</th><th>Avatar</th></tr>
+                  {itemRows}
+                </tbody>
+              </table>
+            </div>
+        );
+      };
+      ReactDOM.render(<Users />, document.getElementById("root"));
+    </script>
+  </body>
+</html>
