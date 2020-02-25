@@ -17,6 +17,7 @@ export default function App() {
     <View style={styles.container}>
         <View style={styles.text}>
             <TextInput
+            keyboardType="numeric"
             style={styles.tInput}
             onChangeText={(shopItem) => setShopItem(shopItem)}
             />

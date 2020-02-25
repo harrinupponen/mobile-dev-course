@@ -3,30 +3,45 @@ import { StyleSheet, Text, View, Button, FlatList, TextInput } from 'react-nativ
 
 export default function App() {
 
-  const [shopItem, setShopItem] = useState(0);
+  const [numberOne, setNumberOne] = useState(0);
+  const [numberTwo, setNumberTwo] = useState(0);
+  const [result, setResult] = useState(0);
   const [data, setData] = useState([]);
 
-  const addItem = () => {
-    setData([...data, {key: shopItem}]);
+  const calcSum = () => {
+    const sum = parseInt(numberOne) + parseInt(numberTwo);
+    const item = numberOne + ' + ' + numberTwo + ' = ' + sum;
+    setResult(sum);
+    setData([...data, {key: item}]);
   }
-  const clearList = () => {
-    setData([]);
+  const calcSub = () => {
+    const sum = parseInt(numberOne) - parseInt(numberTwo);
+    const item = numberOne + ' - ' + numberTwo + ' = ' + sum;
+    setResult(sum);
+    setData([...data, {key: item}]);
   }
 
   return (
     <View style={styles.container}>
         <View style={styles.text}>
+            <Text>Result: {result}</Text>
             <TextInput
+            keyboardType="numeric"
             style={styles.tInput}
-            onChangeText={(shopItem) => setShopItem(shopItem)}
+            onChangeText={(numberOne) => setNumberOne(numberOne)}
+            />
+            <TextInput
+            keyboardType="numeric"
+            style={styles.tInput}
+            onChangeText={(numberTwo) => setNumberTwo(numberTwo)}
             />
         </View>    
         <View style={styles.buttons}>
-            <Button onPress={addItem} title="Add" />
-            <Button onPress={clearList} title="Clear" />
+            <Button onPress={calcSum} title="+" />
+            <Button onPress={calcSub} title="-" />
         </View>
         <View style={styles.history}>
-            <Text>Shopping List:</Text>
+            <Text>History:</Text>
             <FlatList
             data={data}
             renderItem={({item}) =>
