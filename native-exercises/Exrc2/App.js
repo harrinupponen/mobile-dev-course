@@ -14,6 +14,7 @@ export default function App() {
     const  start = () => {
         setSecretNumber(Math.floor(Math.random() * 100) +1)
         setAdvice('Guess a number between 1-100')
+        setGuesses(0)
     }
 
     const check = () => {
@@ -25,7 +26,7 @@ export default function App() {
             setAdvice('Your guess ' + givenNumber + ' is too high')
         }
         else {
-            setAdvice('You guessed the correct number in ' + guesses + ' guesses')
+            Alert.alert('You guessed the correct number in ' + guesses + ' guesses')
             start()
         }
     }

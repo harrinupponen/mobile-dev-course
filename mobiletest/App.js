@@ -1,61 +1,65 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, FlatList, TextInput } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {StyleSheet, Text, View, Button, Alert, TextInput} from 'react-native';
 
 export default function App() {
+    const [secretNumber, setSecretNumber] = useState(0);
+    const [givenNumber, setGivenNumber] = useState('');
+    const [guesses, setGuesses] = useState(0);
+    const [advice, setAdvice] = useState('');
 
-  const [shopItem, setShopItem] = useState(0);
-  const [data, setData] = useState([]);
+    useEffect(() => {
+        start();
+    },[])
 
-  const addItem = () => {
-    setData([...data, {key: shopItem}]);
-  }
-  const clearList = () => {
-    setData([]);
-  }
+    const  start = () => {
+        setSecretNumber(Math.floor(Math.random() * 100) +1)
+        setAdvice('Guess a number between 1-100')
+        setGuesses(0)
+    }
 
-  return (
-    <View style={styles.container}>
-        <View style={styles.text}>
-            <TextInput
+    const check = () => {
+        setGuesses(guesses +1)
+        if(givenNumber < secretNumber) {
+            setAdvice('Your guess ' + givenNumber + ' is too low')
+        }
+        else if(givenNumber > secretNumber) {
+            setAdvice('Your guess ' + givenNumber + ' is too high')
+        }
+        else {
+            Alert.alert('You guessed the correct number in ' + guesses + ' guesses')
+            start()
+        }
+    }
+
+    return (
+        <View style={styles.container}>
+            <Text>{secretNumber} {advice} {guesses}</Text>
+            <TextInput 
+            keyboardType="numeric"
             style={styles.tInput}
-            onChangeText={(shopItem) => setShopItem(shopItem)}
+            onChangeText={(givenNumber) => setGivenNumber(givenNumber)}
             />
-        </View>    
-        <View style={styles.buttons}>
-            <Button onPress={addItem} title="Add" />
-            <Button onPress={clearList} title="Clear" />
+            <View style={styles.buttons}>
+                <Button onPress={check} title="Make a guess" />
+            </View>
         </View>
-        <View style={styles.history}>
-            <Text>Shopping List:</Text>
-            <FlatList
-            data={data}
-            renderItem={({item}) =>
-            <Text>{item.key}</Text>
-            }/>
-        </View>
-    </View>
-  );
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-  },
-  text: {
-    alignItems: 'center'
-  },
-  tInput: {
-    borderColor: 'blue',
-    width: 100,
-    borderWidth: 2,
-  },
-  buttons: {
-    flexDirection: 'row',
-    justifyContent: 'center'
-  },
-  history: {
-      alignItems: 'center'
-  }
+    container: {
+        flex:1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    tInput: {
+        borderColor: 'blue',
+        width: 100,
+        borderWidth: 2
+    },
+    buttons: {
+        flexDirection: 'row',
+        alignItems: 'flex-start'
+    }
 });
