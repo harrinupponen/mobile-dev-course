@@ -26,7 +26,7 @@ export default function App() {
             setAdvice('Your guess ' + givenNumber + ' is too high')
         }
         else {
-            Alert.alert('You guessed the correct number in ' + guesses + ' guesses')
+            Alert.alert('You guessed the correct number in ' + (guesses + 1) + ' guesses')
             start()
         }
     }
