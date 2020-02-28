@@ -33,7 +33,7 @@ export default function App() {
 
     return (
         <View style={styles.container}>
-            <Text>{secretNumber} {advice} {guesses}</Text>
+            <Text>{advice}</Text>
             <TextInput 
             keyboardType="numeric"
             style={styles.tInput}
