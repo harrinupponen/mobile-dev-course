@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect} from 'react';
 import { StyleSheet, Text, View, Button, Alert, TextInput, AsyncStorage} from 'react-native';
 
 export default function App() {
@@ -11,7 +11,16 @@ export default function App() {
 
   useEffect(() => {
     start();
+    setDefaultValueToAsyncStorage();
   }, [])
+
+  const setDefaultValueToAsyncStorage = () => {
+    try {
+      AsyncStorage.setItem('hScore', JSON.stringify(999));
+    } catch (e) {
+      Alert.alert('Error saving data')
+    }
+  }
 
   const start = () => {
     setSecretNumber(Math.floor(Math.random() * 100) +1)
@@ -28,27 +37,28 @@ export default function App() {
       setAdvice('Your guess ' + givenNumber + ' is too high')
     }
     if(givenNumber == secretNumber) {
-      saveHighScore()
-      Alert.alert('You guessed the correct number in ' + (guesses +1) + ' guesses')
+      Alert.alert('You guessed the correct number in ' + (guesses+1) + ' guesses')
+      compareAndSaveHighScore()
       start()
-      
     }
   }
 
-  const usePrevState = (value) => {
-    const ref = useRef();
-    useEffect(() => {
-      ref.current = value;
-    }, [value]);
-    return ref.current;
+  const compareAndSaveHighScore = async () => {
+    let retreivedValue = await AsyncStorage.getItem('hScore');
+    let prevValue = JSON.parse(retreivedValue);
+    if(guesses < prevValue) {
+     await AsyncStorage.setItem('hScore', guesses);
+    }
+    getHighScore()
   }
 
-  const saveHighScore = () => {
-    const prevGuess = usePrevState(guesses);
-    if(guesses < prevGuess) {
-      AsyncStorage.setItem('hScore', JSON.stringify(guesses));
+  const getHighScore = async () => {
+    try {
+      let retreivedValue = await AsyncStorage.getItem('hScore');
+      setHighScore(JSON.parse(retreivedValue))
+    } catch (e) {
+      Alert.alert('Error retreiving data')
     }
-    setHighScore(AsyncStorage.getItem(JSON.parse('hScore')));
   }
 
   return (
@@ -73,14 +83,25 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'lightblue'
   },
   tInput: {
-    borderColor: 'blue',
-    width: 100,
-    borderWidth: 2,
+    paddingVertical: 10,
+    paddingHorizontal: 5,
+    marginVertical: 10,
+    borderRadius: 5,
+    width: '50%',
+    backgroundColor: '#ffffff70'
   },
   buttons: {
     flexDirection: 'row',
     alignItems: 'flex-start'
   },
 });
+
+try {
+  let item = await AsyncStorage.getItem('hScore');
+  setSavedValue(JSON.parse(item));
+} catch (e) {
+  Alert.alert('Error retrieving data')
+}

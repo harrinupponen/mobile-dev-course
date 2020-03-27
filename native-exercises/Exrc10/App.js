@@ -3,7 +3,7 @@ import { StyleSheet, Button, View, KeyboardAvoidingView, TextInput, Alert, Keybo
 import MapView, { Marker } from 'react-native-maps';
 import Geocoder from 'react-native-geocoding';
 
-Geocoder.init('AIzaSyBunk_zeXXHwIDnFkQj75cxFP07Sn8zx4E');
+Geocoder.init('MyGoogleApiKey');
 
 export default function App() {
 
@@ -12,7 +12,7 @@ export default function App() {
   const [address, setAddress] = useState('');
   const [restaurants, setRestaurants] = useState([]);
 
-  const findLocation = () => {
+  const findRegionByAddress = () => {
     Geocoder.from(address)
         .then(json => {
           let location = json.results[0].geometry.location;
@@ -24,7 +24,7 @@ export default function App() {
   }
 
   const findRestaurantsNearBy = () => {
-      const url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?' + 'location=' + lat + ',' + lng + '&radius=1000&type=restaurant&key=AIzaSyBunk_zeXXHwIDnFkQj75cxFP07Sn8zx4E';
+      const url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?' + 'location=' + lat + ',' + lng + '&radius=1000&type=restaurant&key=MyGoogleApiKey';
         fetch(url)
         .then((resp) => resp.json())
         .then((json) => {
@@ -64,7 +64,7 @@ export default function App() {
       <KeyboardAvoidingView style={styles.buttons} behavior='padding' enabled>
         <TextInput style={styles.tInput}
           onChangeText={(address) => setAddress(address)} />
-        <Button onPress={findLocation} title="Find Region" />
+        <Button onPress={findRegionByAddress} title="Find Region" />
         <Button onPress={findRestaurantsNearBy} title="Show Restaurants" />
       </KeyboardAvoidingView>
     </View>
