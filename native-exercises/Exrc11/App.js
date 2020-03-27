@@ -38,7 +38,6 @@ export default function App() {
             .catch(error => console.warn(error));
         }
             
-
   return (
     <View style={styles.container}>
       <MapView
