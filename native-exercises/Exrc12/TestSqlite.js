@@ -4,37 +4,37 @@ import * as SQLite from 'expo-sqlite';
 
 export default function App() {
 
-  const [product, setProduct] = useState('');
-  const [amount, setAmount] = useState('');
-  const [shopItems, setShopItems] = useState([]);
+  const [credit, setCredit] = useState('');
+  const [title, setTitle] = useState('');
+  const [courses, setCourses] = useState([]);
 
-  const db = SQLite.openDatabase('shoplist.db');
+  const db = SQLite.openDatabase('coursedb.db');
 
   useEffect(() => {
     db.transaction(tx => {
-      tx.executeSql('create table if not exists shoplist (id integer primary key' +
-      ' not null, product text, amount text);');
+      tx.executeSql('create table if not exists course (id integer primary key' +
+      ' not null, credits int, title text);');
     }, null, updateList);
   }, [])
 
   const saveItem = () => {
     db.transaction(tx => {
-      tx.executeSql('insert into shoplist (product, amount) values (?, ?);',
-      [product, amount]);
+      tx.executeSql('insert into course (credits, title) values (?, ?);',
+      [parseInt(credit), title]);
     }, null, updateList);
   }
 
   const updateList = () => {
     db.transaction(tx => {
-      tx.executeSql('select * from shoplist;', [], (_, { rows }) =>
-      setShopItems(rows._array)
+      tx.executeSql('select * from course;', [], (_, { rows }) =>
+      setCourses(rows._array)
       );
     });
   }
 
   const deleteItem = (id) => {
     db.transaction(tx => {
-      tx.executeSql('delete from shoplist where id = ?;',
+      tx.executeSql('delete from course where id = ?;',
       [id]);
     }, null, updateList);
   }
@@ -44,21 +44,21 @@ export default function App() {
     <View style={styles.container}>
       <View style={{marginTop: 50}}>
           <TextInput style={styles.tInput}
-            placeholder='Product'
-            onChangeText={(product) => setProduct(product)} />
+            placeholder='Title'
+            onChangeText={(title) => setTitle(title)} />
           <TextInput style={styles.tInput}
-            placeholder='Amount'
-            onChangeText={(amount) => setAmount(amount)}/>
-          <Button onPress={saveItem} title='Add to List' />
-      </View>
-      <Text style={{marginTop: 20, fontSize: 16}}>Shopping List</Text>  
+            placeholder='Credit'
+            onChangeText={(credit) => setCredit(credit)}
+            keyboardType='numeric' />
+          <Button onPress={saveItem} title='Save' />
+      </View>  
       <FlatList style={{marginTop: 30}}
         keyExtractor={item => item.id.toString()}
-        data={shopItems}
+        data={courses}
         renderItem={({item}) =>
           <View style={{flexDirection: 'row'}}>
-            <Text>{item.product}, {item.amount}</Text>
-            <Text style={{color: 'red', marginLeft: 20}} onPress={() => deleteItem(item.id)}>Bought</Text>
+            <Text>{item.title}, {item.credits}</Text>
+            <Text style={{color: 'red', marginLeft: 20}} onPress={() => deleteItem(item.id)}>Done</Text>
           </View>}
       />
     </View>
