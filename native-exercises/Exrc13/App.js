@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, FlatList } from 'react-native';
-import {Input, Button} from 'react-native-elements';
+import { View, StyleSheet, FlatList } from 'react-native';
+import {Input, Button, Header, ListItem} from 'react-native-elements';
 import * as SQLite from 'expo-sqlite';
 
 export default function App() {
@@ -43,24 +43,33 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      <Header 
+        centerComponent={{text: 'SHOPPING LIST'}}
+      />
       <View style={{marginTop: 50}}>
-          <TextInput style={styles.tInput}
-            placeholder='Product'
+          <Input
+            placeholder='Add the product name here'
+            label='PRODUCT'
             onChangeText={(product) => setProduct(product)} />
-          <TextInput style={styles.tInput}
-            placeholder='Amount'
+          <Input
+            placeholder='Add the amount here'
+            label='AMOUNT'
             onChangeText={(amount) => setAmount(amount)}/>
-          <Button onPress={saveItem} title='Add to List' />
-      </View>
-      <Text style={{marginTop: 20, fontSize: 16}}>Shopping List</Text>  
-      <FlatList style={{marginTop: 30}}
+          <Button raised icon={{name: 'save'}} onPress={saveItem} title='ADD' />
+      </View>  
+      <FlatList contentContainerStyle={{marginTop: 30}}
         keyExtractor={item => item.id.toString()}
         data={shopItems}
-        renderItem={({item}) =>
-          <View style={{flexDirection: 'row'}}>
-            <Text>{item.product}, {item.amount}</Text>
-            <Text style={{color: 'red', marginLeft: 20}} onPress={() => deleteItem(item.id)}>Bought</Text>
-          </View>}
+        renderItem = {({item}) => (
+            <ListItem
+            title={item.product}
+            subtitle={item.amount}
+            rightTitle='Bought'
+            bottomDivider
+            chevron={{color: 'black'}}
+            onPress={() => deleteItem(item.id)}
+            />
+        )}
       />
     </View>
   );
@@ -70,7 +79,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'lightblue',
-    alignItems: 'center',
+    
     justifyContent: 'center'
   },
   tInput: {
@@ -78,9 +87,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     marginVertical: 10,
     borderRadius: 5,
-    width: 250,
+    width: '80%',
     backgroundColor: 'white'
   },
 });
-
-<Text style={{color: 'red', marginLeft: 20}} onPress={() => deleteItem(item.id)}>Bought</Text>

@@ -1,84 +1,76 @@
-import React, { useState, useEffect} from 'react';
-import { StyleSheet, Text, View, Button, Alert, TextInput, AsyncStorage} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Text, FlatList } from 'react-native';
+import {Input, Button, Header, ListItem} from 'react-native-elements';
+import * as SQLite from 'expo-sqlite';
 
 export default function App() {
 
-  const [secretNumber, setSecretNumber] = useState(0);
-  const [givenNumber, setGivenNumber] = useState('');
-  const [guesses, setGuesses] = useState(1);
-  const [advice, setAdvice] = useState('');
-  const [highScore, setHighScore] = useState(999);
+  const [product, setProduct] = useState('');
+  const [amount, setAmount] = useState('');
+  const [shopItems, setShopItems] = useState([]);
+
+  const db = SQLite.openDatabase('shoplist.db');
 
   useEffect(() => {
-    start();
-    setValueToAsyncStorage();
-  }, [highScore])
+    db.transaction(tx => {
+      tx.executeSql('create table if not exists shoplist (id integer primary key' +
+      ' not null, product text, amount text);');
+    }, null, updateList);
+  }, [])
 
-  const setValueToAsyncStorage = async () => {
-    try {
-      await AsyncStorage.setItem('hScore', JSON.stringify(highScore));
-    } catch (e) {
-      Alert.alert('Error saving data')
-    }
-    try {
-      let retreivedValue = await AsyncStorage.getItem('hScore');
-      setHighScore(JSON.parse(retreivedValue))
-    } catch (e) {
-      Alert.alert('Error retreiving data')
-    }
+  const saveItem = () => {
+    db.transaction(tx => {
+      tx.executeSql('insert into shoplist (product, amount) values (?, ?);',
+      [product, amount]);
+    }, null, updateList);
   }
 
-  const start = () => {
-    setSecretNumber(Math.floor(Math.random() * 100) +1)
-    setAdvice('Guess a number between 1-100')
-    setGuesses(1)
+  const updateList = () => {
+    db.transaction(tx => {
+      tx.executeSql('select * from shoplist;', [], (_, { rows }) =>
+      setShopItems(rows._array)
+      );
+    });
   }
 
-  const check = () => {
-    setGuesses(guesses +1);
-    if(givenNumber < secretNumber) {
-      setAdvice('Your guess ' + givenNumber + ' is too low')
-    }
-    if(givenNumber > secretNumber) {
-      setAdvice('Your guess ' + givenNumber + ' is too high')
-    }
-    if(givenNumber == secretNumber) {
-      Alert.alert('You guessed the correct number in ' + (guesses) + ' guesses')
-      compareAndSaveHighScore()
-      start()
-    }
+  const deleteItem = (id) => {
+    db.transaction(tx => {
+      tx.executeSql('delete from shoplist where id = ?;',
+      [id]);
+    }, null, updateList);
   }
-
-  const compareAndSaveHighScore = async () => {
-    try {
-      let retreivedValue = await AsyncStorage.getItem('hScore');
-      let prevValue = JSON.parse(retreivedValue);
-      if(guesses < prevValue) {
-        await AsyncStorage.setItem('hScore', JSON.stringify(guesses));
-      } 
-    }  catch (e) {
-      Alert.alert('Error')
-    }
-    try {
-      let retreivedValue = await AsyncStorage.getItem('hScore');
-      setHighScore(JSON.parse(retreivedValue))
-    } catch (e) {
-      Alert.alert('Error retreiving data')
-    }
-  }
+            
 
   return (
     <View style={styles.container}>
-      <Text>{advice}</Text>
-      <TextInput
-        keyboardType="numeric"
-        style={styles.tInput}
-        onChangeText={(givenNumber) => setGivenNumber(givenNumber)}
+      <Header 
+        centerComponent={{text: 'SHOPPING LIST'}}
       />
-      <View style={styles.buttons}>
-        <Button onPress={check} title="Make a guess" />
-      </View>
-  <Text>High score: {highScore}</Text>
+      <View style={{marginTop: 50}}>
+          <Input
+            placeholder='Add the product name here'
+            label='PRODUCT'
+            onChangeText={(product) => setProduct(product)} />
+          <Input
+            placeholder='Add the amount here'
+            label='AMOUNT'
+            onChangeText={(amount) => setAmount(amount)}/>
+          <Button raised icon={{name: 'save'}} onPress={saveItem} title='ADD' />
+      </View>  
+      <FlatList contentContainerStyle={{marginTop: 30}}
+        keyExtractor={item => item.id.toString()}
+        data={shopItems}
+        renderItem = {({item}) => (
+            <ListItem
+            title={item.product}
+            subtitle={item.amount}
+            rightTitle='Bought'
+            bottomDivider
+            chevron={{color: 'black'}}
+            onPress={() => deleteItem(item.id)}
+            />
+        )}
+      />
     </View>
   );
 }
@@ -86,21 +78,16 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'lightblue'
+    backgroundColor: 'lightblue',
+    
+    justifyContent: 'center'
   },
   tInput: {
     paddingVertical: 10,
     paddingHorizontal: 5,
     marginVertical: 10,
     borderRadius: 5,
-    width: '50%',
-    backgroundColor: '#ffffff70'
-  },
-  buttons: {
-    flexDirection: 'row',
-    alignItems: 'flex-start'
+    width: '80%',
+    backgroundColor: 'white'
   },
 });
