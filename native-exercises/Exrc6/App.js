@@ -5,31 +5,37 @@ export default function App() {
 
   const [secretNumber, setSecretNumber] = useState(0);
   const [givenNumber, setGivenNumber] = useState('');
-  const [guesses, setGuesses] = useState(0);
+  const [guesses, setGuesses] = useState(1);
   const [advice, setAdvice] = useState('');
-  const [highScore, setHighScore] = useState('');
+  const [highScore, setHighScore] = useState(999);
 
   useEffect(() => {
     start();
-    setDefaultValueToAsyncStorage();
-  }, [])
+    setValueToAsyncStorage();
+  }, [highScore])
 
-  const setDefaultValueToAsyncStorage = () => {
+  const setValueToAsyncStorage = async () => {
     try {
-      AsyncStorage.setItem('hScore', JSON.stringify(999));
+      await AsyncStorage.setItem('hScore', JSON.stringify(highScore));
     } catch (e) {
       Alert.alert('Error saving data')
+    }
+    try {
+      let retreivedValue = await AsyncStorage.getItem('hScore');
+      setHighScore(JSON.parse(retreivedValue))
+    } catch (e) {
+      Alert.alert('Error retreiving data')
     }
   }
 
   const start = () => {
     setSecretNumber(Math.floor(Math.random() * 100) +1)
     setAdvice('Guess a number between 1-100')
-    setGuesses(0)
+    setGuesses(1)
   }
 
   const check = () => {
-    setGuesses(guesses + 1);
+    setGuesses(guesses +1);
     if(givenNumber < secretNumber) {
       setAdvice('Your guess ' + givenNumber + ' is too low')
     }
@@ -37,22 +43,22 @@ export default function App() {
       setAdvice('Your guess ' + givenNumber + ' is too high')
     }
     if(givenNumber == secretNumber) {
-      Alert.alert('You guessed the correct number in ' + (guesses+1) + ' guesses')
+      Alert.alert('You guessed the correct number in ' + (guesses) + ' guesses')
       compareAndSaveHighScore()
       start()
     }
   }
 
   const compareAndSaveHighScore = async () => {
-    let retreivedValue = await AsyncStorage.getItem('hScore');
-    let prevValue = JSON.parse(retreivedValue);
-    if(guesses < prevValue) {
-     await AsyncStorage.setItem('hScore', guesses);
+    try {
+      let retreivedValue = await AsyncStorage.getItem('hScore');
+      let prevValue = JSON.parse(retreivedValue);
+      if(guesses < prevValue) {
+        await AsyncStorage.setItem('hScore', JSON.stringify(guesses));
+      } 
+    }  catch (e) {
+      Alert.alert('Error')
     }
-    getHighScore()
-  }
-
-  const getHighScore = async () => {
     try {
       let retreivedValue = await AsyncStorage.getItem('hScore');
       setHighScore(JSON.parse(retreivedValue))
@@ -63,7 +69,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text>{secretNumber} {advice} {guesses}</Text>
+      <Text>{advice}</Text>
       <TextInput
         keyboardType="numeric"
         style={styles.tInput}
@@ -98,10 +104,3 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start'
   },
 });
-
-try {
-  let item = await AsyncStorage.getItem('hScore');
-  setSavedValue(JSON.parse(item));
-} catch (e) {
-  Alert.alert('Error retrieving data')
-}
