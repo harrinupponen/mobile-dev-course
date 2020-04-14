@@ -14,7 +14,7 @@ export default function App() {
   }, [])
 
   const getLatestRates = () => {
-    const url = 'http://data.fixer.io/api/latest?access_key=35883809298eeb78543a2eb2765ac0c8&format=1';
+    const url = 'http://data.fixer.io/api/latest?access_key=MyKey&format=1';
     fetch(url)
     .then(resp => resp.json())
     .then(respJson => {

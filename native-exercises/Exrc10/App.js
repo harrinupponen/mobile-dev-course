@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Button, View, KeyboardAvoidingView, TextInput, Alert, Keyboard} from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import Geocoder from 'react-native-geocoding';
@@ -7,46 +7,42 @@ Geocoder.init('MyGoogleApiKey');
 
 export default function App() {
 
-  const [lat, setLat] = useState(60.201373);
-  const [lng, setLng] = useState(24.934041);
+  const [lat, setLat] = useState(60.201373);  //Default coordinates to start with
+  const [lng, setLng] = useState(24.934041);  //Ratapihantie 13, HH Pasila campus
   const [address, setAddress] = useState('');
   const [restaurants, setRestaurants] = useState([]);
 
-  const findRegionByAddress = () => {
+  const findRestaurantsNearByAddress = () => {
     Geocoder.from(address)
         .then(json => {
           let location = json.results[0].geometry.location;
+          const url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?'
+          + 'location=' + location.lat + ',' + location.lng + '&radius=1000&type=restaurant&key=MyGoogleApiKey';
           setLat(location.lat);
           setLng(location.lng);
-        })
-        .catch(error => console.warn(error));
+          fetch(url)
+          .then((resp) => resp.json())
+          .then((json) => {
+            console.log(json.results)
+            setRestaurants(json.results)
+            })
+            .catch((error) => {
+              Alert.alert('Error')
+            })
+          })
     Keyboard.dismiss()
   }
-
-  const findRestaurantsNearBy = () => {
-      const url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?' + 'location=' + lat + ',' + lng + '&radius=1000&type=restaurant&key=MyGoogleApiKey';
-        fetch(url)
-        .then((resp) => resp.json())
-        .then((json) => {
-          console.log(json.results)
-          setRestaurants(json.results)
-        })
-        .catch((error) => {
-          Alert.alert('Error')
-        })
-  }
-            
 
   return (
     <View style={styles.container}>
       <MapView
-      style={styles.map}
-      region={{
-        latitude: lat,
-        longitude: lng,
-        latitudeDelta: 0.0322,
-        longitudeDelta: 0.0221
-      }}
+        style={styles.map}
+        region={{
+          latitude: lat,
+          longitude: lng,
+          latitudeDelta: 0.0322,
+          longitudeDelta: 0.0221
+        }}
       >
         {restaurants.map(marker => (
           <Marker
@@ -59,13 +55,12 @@ export default function App() {
           }}
         />
         ))}
-        
       </MapView>
       <KeyboardAvoidingView style={styles.buttons} behavior='padding' enabled>
         <TextInput style={styles.tInput}
-          onChangeText={(address) => setAddress(address)} />
-        <Button onPress={findRegionByAddress} title="Find Region" />
-        <Button onPress={findRestaurantsNearBy} title="Show Restaurants" />
+          onChangeText={(address) => setAddress(address)}
+        />
+        <Button onPress={findRestaurantsNearByAddress} title="Find Restaurants" />
       </KeyboardAvoidingView>
     </View>
   );

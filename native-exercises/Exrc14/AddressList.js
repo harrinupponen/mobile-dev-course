@@ -8,8 +8,7 @@ export default function AddressList(props) {
   const [address, setAddress] = useState('');
   const [addressItems, setAddressItems] = useState([]);
 
-  const db = SQLite.openDatabase('addresslist.db'); //try 'addresslist.db' instead of address.db
-                                                    // --worked!
+  const db = SQLite.openDatabase('addresslist.db');
 
   useEffect(() => {
     db.transaction(tx => {

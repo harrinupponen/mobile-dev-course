@@ -82,5 +82,3 @@ const styles = StyleSheet.create({
     backgroundColor: 'white'
   },
 });
-
-<Text style={{color: 'red', marginLeft: 20}} onPress={() => deleteItem(item.id)}>Bought</Text>
