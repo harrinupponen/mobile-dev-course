@@ -7,19 +7,14 @@ export default function App() {
   const [givenNumber, setGivenNumber] = useState('');
   const [guesses, setGuesses] = useState(1);
   const [advice, setAdvice] = useState('');
-  const [highScore, setHighScore] = useState(999);
+  const [highScore, setHighScore] = useState();
 
   useEffect(() => {
     start();
     setValueToAsyncStorage();
-  }, [highScore])
+  }, [])
 
   const setValueToAsyncStorage = async () => {
-    try {
-      await AsyncStorage.setItem('hScore', JSON.stringify(highScore));
-    } catch (e) {
-      Alert.alert('Error saving data')
-    }
     try {
       let retreivedValue = await AsyncStorage.getItem('hScore');
       setHighScore(JSON.parse(retreivedValue))
@@ -69,7 +64,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text>{advice}</Text>
+      <Text>{secretNumber} {advice}</Text>
       <TextInput
         keyboardType="numeric"
         style={styles.tInput}

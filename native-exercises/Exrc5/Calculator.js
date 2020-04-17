@@ -31,14 +31,14 @@ export default function Calculator(props) {
         <View style={styles.text}>
             <Text>Result: {result}</Text>
             <TextInput
-            keyboardType="numeric"
-            style={styles.tInput}
-            onChangeText={(numberOne) => setNumberOne(numberOne)}
+              keyboardType="numeric"
+              style={styles.tInput}
+              onChangeText={(numberOne) => setNumberOne(numberOne)}
             />
             <TextInput
-            keyboardType="numeric"
-            style={styles.tInput}
-            onChangeText={(numberTwo) => setNumberTwo(numberTwo)}
+              keyboardType="numeric"
+              style={styles.tInput}
+              onChangeText={(numberTwo) => setNumberTwo(numberTwo)}
             />
         </View>    
         <View style={styles.buttons}>

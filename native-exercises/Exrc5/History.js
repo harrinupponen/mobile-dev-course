@@ -8,10 +8,10 @@ export default function History(props) {
     return (
         <View style={styles.history}>
             <FlatList
-            contentContainerStyle={styles.list}
-            data={params.history}
-            renderItem={({item}) =>
-            <Text>{item.key}</Text>
+                contentContainerStyle={styles.list}
+                data={params.history}
+                renderItem={({item}) =>
+                    <Text>{item.key}</Text>
             }/>
         </View>
     )
